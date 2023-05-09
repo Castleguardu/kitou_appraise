@@ -1,31 +1,29 @@
 package com.ktar.controller;
 
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RadixUtil;
 import cn.hutool.core.util.RandomUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ktar.dto.LoginFormDTO;
 import com.ktar.dto.Result;
 import com.ktar.dto.UserDTO;
+import com.ktar.entity.Blog;
 import com.ktar.entity.User;
 import com.ktar.entity.UserInfo;
 import com.ktar.service.IUserInfoService;
 import com.ktar.service.IUserService;
 import com.ktar.utils.RegexUtils;
+import com.ktar.utils.SystemConstants;
 import com.ktar.utils.UserHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
-/**
- * <p>
- * 前端控制器
- * </p>
- *
- * @author 虎哥
- * @since 2021-12-22
- */
+
 @Slf4j
 @RestController
 @RequestMapping("/user")
@@ -85,5 +83,28 @@ public class UserController {
         info.setUpdateTime(null);
         // 返回
         return Result.ok(info);
+    }
+
+    // UserController 根据id查询用户
+    @GetMapping("/{id}")
+    public Result queryUserById(@PathVariable("id") Long userId){
+        // 查询详情
+        User user = userService.getById(userId);
+        if (user == null) {
+            return Result.ok();
+        }
+        UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
+        // 返回
+        return Result.ok(userDTO);
+    }
+
+    @PostMapping("/sign")
+    public Result sign() {
+        return userService.sign();
+    }
+
+    @GetMapping("/sign/count")
+    public Result signCount() {
+        return userService.signCount();
     }
 }
